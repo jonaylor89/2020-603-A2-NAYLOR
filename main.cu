@@ -209,7 +209,7 @@ int main(int argc, char *argv[])
 
     int gridDim = (dataset->num_instances() + THREADS_DIM - 1) / THREADS_DIM;
 
-    dim3 blockSize (THREADS_DIM, THREADS_DIM)
+    dim3 blockSize (THREADS_DIM, THREADS_DIM);
     dim3 gridSize (gridDim, gridDim);
 
     // --------------------------- CPU ---------------
@@ -241,7 +241,7 @@ int main(int argc, char *argv[])
     // Get the class predictions
     KNN_GPU<<< gridSize, blockSize >>>(dataset, k, predictionsDevice);
 
-    cudoMemcpy(predictionsHost, predictionsDevice, dataset->num_instances() * sizeof(int), cudoMemcpyDeviceToHost)
+    cudaMemcpy(predictionsHost, predictionsDevice, dataset->num_instances() * sizeof(int), cudaMemcpyDeviceToHost);
 
     // Compute the confusion matrix
     int* confusionMatrixGPU = computeConfusionMatrix(predictionsHost, dataset);
