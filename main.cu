@@ -92,7 +92,7 @@ void KNN(ArffData* dataset, int k, int* predictions)
     }
 }
 
-__global__ void KNN_GPU(ArffData* dataset, const int k, int* predictions)
+__global__ void KNN_GPU(ArffData* dataset, int k, int* predictions)
 {
 
     int row = blockIdx.x * blockDim.x + threadIdx.x; // Some combination of threadId and blockId
@@ -133,7 +133,8 @@ __global__ void KNN_GPU(ArffData* dataset, const int k, int* predictions)
         }
 
         // map(neighbors, (x) => neighbors.class)
-        int outputValues[k];
+        int* outputValues;
+        cudaMallocDevice(outputValues, k * sizeof(int));
         for(int j = 0; j < k; j++)
         {
             outputValues[j] = dataset->get_instance(neighbors[j])->get(dataset->num_attributes() - 1)->operator int32();
