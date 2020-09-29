@@ -12,7 +12,7 @@
 #include <bits/stdc++.h>   // for sorting
 // -----------
 
-#define THEADS_DIM 16
+#define THREADS_DIM 16
 
 
 using namespace std;
@@ -198,6 +198,10 @@ int main(int argc, char *argv[])
     // Get k
     int k = atoi(argv[2]);
 
+    // Open the dataset
+    ArffParser parser(argv[1]);
+    ArffData *dataset = parser.parse();
+
     // Allocate Memory
     int* predictionsHostCPU;
     int* predictionsHost;
@@ -214,9 +218,6 @@ int main(int argc, char *argv[])
 
     // --------------------------- CPU ---------------
    
-    // Open the dataset
-    ArffParser parser(argv[1]);
-    ArffData *dataset = parser.parse();
     struct timespec start, end;
 
     clock_gettime(CLOCK_MONOTONIC_RAW, &start);
