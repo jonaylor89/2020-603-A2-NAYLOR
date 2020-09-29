@@ -20,7 +20,7 @@ using namespace std;
 void KNN(ArffData* dataset, int k, int* predictions)
 {
     // predictions is the array where you have to return the class predicted (integer) for the dataset instances
-    int* predictions = (int*)malloc(dataset->num_instances() * sizeof(int));
+    // int* predictions = (int*)malloc(dataset->num_instances() * sizeof(int));
     
     // The following two lines show the syntax to retrieve the attribute values and the class value for a given instance in the dataset
     // float attributeValue = dataset->get_instance(instanceIndex)->get(attributeIndex)->operator float();
