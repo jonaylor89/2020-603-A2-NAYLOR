@@ -17,7 +17,7 @@
 
 using namespace std;
 
-int* KNN(ArffData* dataset, int k, int* predictions)
+void KNN(ArffData* dataset, int k, int* predictions)
 {
     // predictions is the array where you have to return the class predicted (integer) for the dataset instances
     int* predictions = (int*)malloc(dataset->num_instances() * sizeof(int));
@@ -92,7 +92,7 @@ int* KNN(ArffData* dataset, int k, int* predictions)
     }
 }
 
-__global__ int* KNN_GPU(ArffData* dataset, int k, int* predictions)
+__global__ void KNN_GPU(ArffData* dataset, int k, int* predictions)
 {
 
     int row = blockIdx.x * blockDim.x + threadIdx.x; // Some combination of threadId and blockId
@@ -250,7 +250,7 @@ int main(int argc, char *argv[])
     float accuracyGPU = computeAccuracy(confusionMatrixGPU, dataset);
 
     clock_gettime(CLOCK_MONOTONIC_RAW, &end);
-    uint64_t diffMP = (1000000000L * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec) / 1e6;
+    uint64_t diffGPU = (1000000000L * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec) / 1e6;
 
     printf("The KNN classifier on the GPU for %lu instances required %llu ms CPU time, accuracy was %.4f\n", dataset->num_instances(), (long long unsigned int) diffGPU, accuracyGPU);
 
