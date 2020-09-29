@@ -133,8 +133,7 @@ __global__ void KNN_GPU(ArffData* dataset, int k, int* predictions)
         }
 
         // map(neighbors, (x) => neighbors.class)
-        int* outputValues;
-        cudaMalloc(&outputValues, k * sizeof(int));
+        int* outputValues = new int[k];
         for(int j = 0; j < k; j++)
         {
             outputValues[j] = dataset->get_instance(neighbors[j])->get(dataset->num_attributes() - 1)->operator int32();
