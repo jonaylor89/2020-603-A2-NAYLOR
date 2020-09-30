@@ -228,9 +228,9 @@ int main(int argc, char *argv[])
 
     for(int i = 0; i < dataset->num_instances(); i++)
     {
-        for(int j = 0; j < dataset->num_attributes; j++)
+        for(int j = 0; j < dataset->num_attributes(); j++)
         {
-            datasetArrayHost[i][j] = dataset->get_instance(i)->get(j)->operator float();
+            datasetArrayHost[i * dataset->num_attributes() + j] = dataset->get_instance(i)->get(j)->operator float();
         }
     }
 
