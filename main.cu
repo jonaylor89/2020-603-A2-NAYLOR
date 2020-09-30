@@ -118,8 +118,8 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
             for(int y = 0; y < rows - 1; y++)
             {
                 squaredSum += (
-                    (dataset[row][y] - dataset[j][y]) *
-                    (dataset[row][y] - dataset[j][y])
+                    (dataset[row * colummns + y] - dataset[j * columns + y]) *
+                    (dataset[row * columns + y] - dataset[j * columns + y])
                 );
             }
 
