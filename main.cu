@@ -115,12 +115,16 @@ __global__ void KNN_GPU(ArffData* dataset, int rows, int columns, int k, int* pr
             }
 
             long squaredSum = 0;
-            for(int y = 0; y < dataset->num_attributes() - 1; y++)
+            for(int y = 0; y < rows - 1; y++)
             {
-                squaredSum += pow(dataset->get_instance(row)->get(y)->operator float() - dataset->get_instance(j)->get(y)->operator float(),  2);
+                squaredSum += (
+                    (dataset[row][y] - dataset[j][y]) *
+                    (dataset[row][y] - dataset[j][y])
+                );
             }
 
-            distances[j] = tuple<int, double>(j, sqrt(squaredSum));
+            distancesKey[j] = j;
+            distancesValue[j] = sqrt(squaredSum);
         }
 
         // distances.sort()
@@ -138,7 +142,7 @@ __global__ void KNN_GPU(ArffData* dataset, int rows, int columns, int k, int* pr
         int* outputValues = new int[k];
         for(int j = 0; j < k; j++)
         {
-            outputValues[j] = dataset[neighbors[j]]->get(dataset->num_attributes() - 1)->operator int32();
+            outputValues[j] = (int)dataset[neighbors[j]][rows - 1];
         }
 
         // mode()
