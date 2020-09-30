@@ -135,7 +135,7 @@ __global__ void KNN_GPU(ArffData* dataset, int rows, int columns, int k, int* pr
         // distances.take(5)
         for(int x = 0; x < k; x++)
         {
-            neighbors[x] = get<0>(distances[x]);
+            neighbors[x] = get<0>(distancesKey[x]);
         }
 
         // map(neighbors, (x) => neighbors.class)
@@ -226,14 +226,11 @@ int main(int argc, char *argv[])
     dim3 blockSize (THREADS_DIM, THREADS_DIM);
     dim3 gridSize (gridDim, gridDim);
 
-    for(int i = 0; i < numberElements; i++)
+    for(int i = 0; i < dataset->num_instances(); i++)
     {
-        for(int j = 0; j < matrixHeight; j++)
+        for(int j = 0; j < dataset->num_attributes; j++)
         {
-            for(int k = 0; k < matrixWidth; k++)
-            {
-                datasetArrayHost[i] = dataset->get_instance(j)->get(k)->operator float();
-            }
+            datasetArrayHost[i][j] = dataset->get_instance(i)->get(j)->operator float();
         }
     }
 
