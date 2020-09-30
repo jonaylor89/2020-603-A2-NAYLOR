@@ -92,17 +92,17 @@ void KNN(ArffData* dataset, int k, int* predictions)
     }
 }
 
-__global__ void KNN_GPU(ArffData* dataset, int k, int* predictions)
+__global__ void KNN_GPU(ArffData* dataset, int size, int k, int* predictions)
 {
 
     int row = blockIdx.x * blockDim.x + threadIdx.x; // Some combination of threadId and blockId
 
-    if(row < dataset->num_instances())
+    if(row < size)
     {
         // getNeighbors()
         int neighbors[5];
-        tuple<int, double>* distances = (tuple<int, double>*)malloc(dataset->num_instances() * sizeof(tuple<int, double>));
-        for(int j = 0; j < dataset->num_instances(); j++)
+        tuple<int, double>* distances = new tuple<int, double>[size];
+        for(int j = 0; j < size; j++)
         {
 
             // map(dataset, (train) => (train, distance(train)))
@@ -122,7 +122,7 @@ __global__ void KNN_GPU(ArffData* dataset, int k, int* predictions)
         }
 
         // distances.sort()
-        sort(distances, distances + dataset->num_instances(), [](tuple<int, double> a, tuple<int, double> b) {
+        sort(distances, distances + size, [](tuple<int, double> a, tuple<int, double> b) {
             return get<1>(a) < get<1>(b);
         });
 
@@ -136,7 +136,7 @@ __global__ void KNN_GPU(ArffData* dataset, int k, int* predictions)
         int* outputValues = new int[k];
         for(int j = 0; j < k; j++)
         {
-            outputValues[j] = dataset->get_instance(neighbors[j])->get(dataset->num_attributes() - 1)->operator int32();
+            outputValues[j] = dataset[neighbors[j]]->get(dataset->num_attributes() - 1)->operator int32();
         }
 
         // mode()
@@ -156,7 +156,7 @@ __global__ void KNN_GPU(ArffData* dataset, int k, int* predictions)
         }
 
         predictions[row] = mode;
-        free(distances);
+        delete distances;
     }
 }
 
@@ -240,7 +240,7 @@ int main(int argc, char *argv[])
     clock_gettime(CLOCK_MONOTONIC_RAW, &start);
     
     // Get the class predictions
-    KNN_GPU<<< gridSize, blockSize >>>(dataset, k, predictionsDevice);
+    KNN_GPU<<< gridSize, blockSize >>>(dataset, dataset->num_instances(), k, predictionsDevice);
 
     cudaMemcpy(predictionsHost, predictionsDevice, dataset->num_instances() * sizeof(int), cudaMemcpyDeviceToHost);
 
