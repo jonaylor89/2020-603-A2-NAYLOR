@@ -92,7 +92,7 @@ void KNN(ArffData* dataset, int k, int* predictions)
     }
 }
 
-__global__ void KNN_GPU(ArffData* dataset, int rows, int columns, int k, int* predictions)
+__global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predictions)
 {
 
     int row = blockIdx.x * blockDim.x + threadIdx.x; // Some combination of threadId and blockId
