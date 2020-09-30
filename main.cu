@@ -92,7 +92,7 @@ void KNN(ArffData* dataset, int k, int* predictions)
     }
 }
 
-__global__ void KNN_GPU(ArffData* dataset, int size, int k, int* predictions)
+__global__ void KNN_GPU(ArffData* dataset, int rows, int columns, int k, int* predictions)
 {
 
     int row = blockIdx.x * blockDim.x + threadIdx.x; // Some combination of threadId and blockId
@@ -101,14 +101,16 @@ __global__ void KNN_GPU(ArffData* dataset, int size, int k, int* predictions)
     {
         // getNeighbors()
         int neighbors[5];
-        tuple<int, double>* distances = new tuple<int, double>[size];
-        for(int j = 0; j < size; j++)
+        int* distancesKey = new int[rows];
+        double* distancesValue = new double[rows];
+        for(int j = 0; j < rows; j++)
         {
 
             // map(dataset, (train) => (train, distance(train)))
             if(j == row)
             {
-                distances[j] = tuple<int, double>(j, INT_MAX);
+                distancesKey[j] = j;
+                distancesValue[j] = INT_MAX;
                 continue;
             }
 
@@ -122,7 +124,7 @@ __global__ void KNN_GPU(ArffData* dataset, int size, int k, int* predictions)
         }
 
         // distances.sort()
-        sort(distances, distances + size, [](tuple<int, double> a, tuple<int, double> b) {
+        sort(distances, distances + row, [](tuple<int, double> a, tuple<int, double> b) {
             return get<1>(a) < get<1>(b);
         });
 
@@ -205,16 +207,34 @@ int main(int argc, char *argv[])
     // Allocate Memory
     int* predictionsHostCPU;
     int* predictionsHost;
+    float* datasetArrayHost;
+    float* datasetArrayDevice;
     int* predictionsDevice;
 
     cudaMalloc(&predictionsDevice, dataset->num_instances() * sizeof(int));
-    cudaMallocHost(&predictionsHost, dataset->num_instances() * sizeof(int));
+    cudaMalloc(&datasetArrayDevice, dataset->num_instances() * dataset->num_attributes() * sizeof(float));
+    cudaMallocHost(&datasetArrayHost, dataset->num_instances() * dataset->num_attributes() * sizeof(float));
+    cudaMalloc(&predictionsDevice, dataset->num_instances() * sizeof(int));
     cudaMallocHost(&predictionsHostCPU, dataset->num_instances() * sizeof(int));
+    cudaMallocHost(&predictionsHost, dataset->num_instances() * sizeof(int));
 
     int gridDim = (dataset->num_instances() + THREADS_DIM - 1) / THREADS_DIM;
 
     dim3 blockSize (THREADS_DIM, THREADS_DIM);
     dim3 gridSize (gridDim, gridDim);
+
+    for(int i = 0; i < numberElements; i++)
+    {
+        for(int j = 0; j < matrixHeight; j++)
+        {
+            for(int k = 0; k < matrixWidth; k++)
+            {
+                datasetArrayHost[i] = dataset->get_instance(j)->get(k)->operator float();
+            }
+        }
+    }
+
+    cudaMemcpy(datasetArrayDevice, datasetArrayHost, dataset->num_instances() * dataset->num_attributes() * sizeof(float), cudaMemcpyHostToDevice);
 
     // --------------------------- CPU ---------------
    
@@ -239,8 +259,9 @@ int main(int argc, char *argv[])
 
     clock_gettime(CLOCK_MONOTONIC_RAW, &start);
     
+    
     // Get the class predictions
-    KNN_GPU<<< gridSize, blockSize >>>(dataset, dataset->num_instances(), k, predictionsDevice);
+    KNN_GPU<<< gridSize, blockSize >>>(datasetArrayDevice, dataset->num_instances(), dataset->num_attributes(), k, predictionsDevice);
 
     cudaMemcpy(predictionsHost, predictionsDevice, dataset->num_instances() * sizeof(int), cudaMemcpyDeviceToHost);
 
