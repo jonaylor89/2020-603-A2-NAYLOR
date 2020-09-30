@@ -97,7 +97,7 @@ __global__ void KNN_GPU(ArffData* dataset, int rows, int columns, int k, int* pr
 
     int row = blockIdx.x * blockDim.x + threadIdx.x; // Some combination of threadId and blockId
 
-    if(row < size)
+    if(row < rows)
     {
         // getNeighbors()
         int neighbors[5];
