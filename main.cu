@@ -214,7 +214,6 @@ int main(int argc, char *argv[])
     cudaMalloc(&predictionsDevice, dataset->num_instances() * sizeof(int));
     cudaMalloc(&datasetArrayDevice, dataset->num_instances() * dataset->num_attributes() * sizeof(float));
     cudaMallocHost(&datasetArrayHost, dataset->num_instances() * dataset->num_attributes() * sizeof(float));
-    cudaMalloc(&predictionsDevice, dataset->num_instances() * sizeof(int));
     cudaMallocHost(&predictionsHostCPU, dataset->num_instances() * sizeof(int));
     cudaMallocHost(&predictionsHost, dataset->num_instances() * sizeof(int));
 
@@ -277,5 +276,8 @@ int main(int argc, char *argv[])
 
     // Free memory
     cudaFree(predictionsDevice);
+    cudaFree(datasetArrayDevice);
     cudaFreeHost(predictionsHost);
+    cudaFreeHost(datasetArrayHost);
+    cudaFreeHost(predictionsHostCPU);
 }
