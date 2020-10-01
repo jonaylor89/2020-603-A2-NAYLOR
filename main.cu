@@ -167,8 +167,8 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
             outputValues[j] = (int)dataset[(neighbors[j] * columns) + rows - 1];
         }
 
-/*
         // mode()
+        /*
         map<int, int> histogram;
 
         int mode_count = 0;
@@ -184,8 +184,28 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
             }
         }
         */
+        int maximum = 0;
+        for(int blah = 0; blah < k; blah++)
+        {
+            if(outputValues[blah] > maximum) { maximum = outputValues[blah]; }
+        }
 
-        // predictions[row] = mode;
+        int* outputValueMapping = new int[maximum]{ 0 };
+
+        int mode = 0;
+        int modeCount = -1;
+        for(int blah = 0; blah < k; blah++)
+        {
+            int outputValue = outputValues[blah];
+            outputValueMapping[outputValue]++;
+
+            if(outputValueMapping[outputValue] > modeCount)
+            {
+                mode = outputValue; 
+            }
+        }
+
+        predictions[row] = mode;
     }
 }
 
