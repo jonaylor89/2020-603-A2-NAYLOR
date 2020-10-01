@@ -116,7 +116,7 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
             }
 
             double squaredSum = 0;
-            for(int y = 0; y < columns - 1; y++)
+            for(int y = 0; y < columns - 2; y++)
             {
                 squaredSum += (
                     (dataset[row * columns + y] - dataset[j * columns + y]) *
