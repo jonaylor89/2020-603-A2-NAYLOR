@@ -169,7 +169,7 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
 
         int* outputValueMapping = new int[maximum]{ 0 };
 
-        int mode = 0;
+        int mode = 10;
         int modeCount = -1;
         for(int blah = 0; blah < k; blah++)
         {
@@ -278,7 +278,6 @@ int main(int argc, char *argv[])
 
 
     clock_gettime(CLOCK_MONOTONIC_RAW, &start);
-    
     
     // Get the class predictions
     KNN_GPU<<< gridSize, blockSize >>>(datasetArrayDevice, dataset->num_instances(), dataset->num_attributes(), k, predictionsDevice);
