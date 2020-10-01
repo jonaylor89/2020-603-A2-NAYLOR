@@ -124,6 +124,7 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
 
             int sqrtOfSquaredSum = sqrt(squaredSum);
 
+            printf("HERE\n");
             // distancesKey[j] = j;
             // distancesValue[j] = sqrtOfSquaredSum;
 
@@ -182,7 +183,6 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
             }
         }
 
-        printf("HERE\n");
         predictions[row] = mode;
     }
 }
