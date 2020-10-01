@@ -152,6 +152,7 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
             }
 
         }
+        printf("HERE\n");
 
         // map(neighbors, (x) => neighbors.class)
         int* outputValues = new int[k];
@@ -162,7 +163,6 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
 
         // mode()
         int maximum = 0;
-        printf("HERE\n");
         for(int blah = 0; blah < k; blah++)
         {
             if(outputValues[blah] > maximum) { maximum = outputValues[blah]; }
