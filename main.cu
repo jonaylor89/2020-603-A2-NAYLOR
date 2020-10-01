@@ -133,18 +133,18 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
             int lastLargerIndex = -1;
             for(int idx = k - 1; idx >= 0; idx--)
             {
-                if(neighborDistances[neighbors[idx]] > sqrtOfSquaredSum && idx != 0) 
+                if(neighborDistances[idx] > sqrtOfSquaredSum && idx != 0) 
                 {
                     lastLargerIndex = idx;
                     continue; 
                 }
-                else if(neighborDistances[neighbors[idx]] > sqrtOfSquaredSum && idx == 0)
+                else if(neighborDistances[idx] > sqrtOfSquaredSum && idx == 0)
                 {
                     neighbors[idx] = j;
                     neighborDistances[idx] = sqrtOfSquaredSum;
                     lastLargerIndex = -1;
                 }
-                else if(neighborDistances[neighbors[idx]] < sqrtOfSquaredSum && lastLargerIndex != -1)
+                else if(neighborDistances[idx] < sqrtOfSquaredSum && lastLargerIndex != -1)
                 {
                     neighbors[idx] = j;
                     neighborDistances[idx] = sqrtOfSquaredSum;
