@@ -99,6 +99,7 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
 
     if(row < rows)
     {
+        printf("Less dumb is going on\n");
         // getNeighbors()
         int* neighbors = new int[k]{ 0 };
         double* neighborDistances = new double[k]{ FLT_MAX };
@@ -169,7 +170,7 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
 
         int* outputValueMapping = new int[maximum]{ 0 };
 
-        int mode = 10;
+        int mode = 0;
         int modeCount = -1;
         for(int blah = 0; blah < k; blah++)
         {
@@ -183,6 +184,10 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
         }
 
         predictions[row] = mode;
+    }
+    else 
+    {
+        printf("Some dumb is going on\n");
     }
 }
 
