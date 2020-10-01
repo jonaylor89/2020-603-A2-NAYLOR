@@ -147,8 +147,8 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
                 }
                 else if(neighborDistances[idx] < sqrtOfSquaredSum && lastLargerIndex != -1)
                 {
-                    neighbors[idx] = j;
-                    neighborDistances[idx] = sqrtOfSquaredSum;
+                    neighbors[lastLargerIndex] = j;
+                    neighborDistances[lastLargerIndex] = sqrtOfSquaredSum;
                     printf("second %f\n", sqrtOfSquaredSum);
                     lastLargerIndex = -1;
                 }
