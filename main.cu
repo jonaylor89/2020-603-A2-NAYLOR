@@ -157,7 +157,7 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
         int* outputValues = new int[k];
         for(int j = 0; j < k; j++)
         {
-            outputValues[j] = (int)dataset[(neighbors[j] * columns) + rows - 1];
+            outputValues[j] = (int)dataset[(neighbors[j] * columns) + columns - 1];
         }
 
         // mode()
