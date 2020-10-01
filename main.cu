@@ -153,13 +153,6 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
 
         }
 
-        // distances.sort()
-        /*
-        sort(distances, distances + row, [](tuple<int, double> a, tuple<int, double> b) {
-            return get<1>(a) < get<1>(b);
-        });
-        */
-
         // map(neighbors, (x) => neighbors.class)
         int* outputValues = new int[k];
         for(int j = 0; j < k; j++)
@@ -168,22 +161,6 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
         }
 
         // mode()
-        /*
-        map<int, int> histogram;
-
-        int mode_count = 0;
-        int mode = -1;
-        for(int a = 0; a < k; a++) 
-        {
-            int element = outputValues[a];
-            histogram[element]++;
-            if(histogram[element] > mode_count)
-            {
-                mode_count = histogram[element];
-                mode = element;
-            }
-        }
-        */
         int maximum = 0;
         for(int blah = 0; blah < k; blah++)
         {
@@ -307,6 +284,12 @@ int main(int argc, char *argv[])
     KNN_GPU<<< gridSize, blockSize >>>(datasetArrayDevice, dataset->num_instances(), dataset->num_attributes(), k, predictionsDevice);
 
     cudaMemcpy(predictionsHost, predictionsDevice, dataset->num_instances() * sizeof(int), cudaMemcpyDeviceToHost);
+
+    for(int i = 0; i < dataset->num_instances(); i++)
+    {
+        cout << predictionsHost << " ";
+    }
+    cout << endl;
 
     // Compute the confusion matrix
     int* confusionMatrixGPU = computeConfusionMatrix(predictionsHost, dataset);
