@@ -100,6 +100,7 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
     if(row < rows)
     {
         // getNeighbors()
+        int* outputValues;
         int* neighbors = new int[k]{ 0 };
         double* neighborDistances = new double[k]{ FLT_MAX };
         int* distancesKey = new int[rows];
@@ -155,7 +156,7 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
 
         // map(neighbors, (x) => neighbors.class)
         printf("HERE\n");
-        int* outputValues = new int[k];
+        outputValues = new int[k];
         printf("THERE\n");
         for(int j = 0; j < k; j++)
         {
@@ -164,7 +165,6 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
         }
 
 
-        printf("HERE\n");
         // mode()
         int maximum = 0;
         for(int blah = 0; blah < k; blah++)
