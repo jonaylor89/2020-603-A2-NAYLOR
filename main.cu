@@ -287,7 +287,7 @@ int main(int argc, char *argv[])
 
     for(int i = 0; i < dataset->num_instances(); i++)
     {
-        cout << predictionsHost << " ";
+        cout << predictionsHost[i] << " ";
     }
     cout << endl;
 
