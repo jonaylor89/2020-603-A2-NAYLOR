@@ -153,7 +153,6 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
 
         }
 
-        printf("HERE\n");
         // map(neighbors, (x) => neighbors.class)
         int* outputValues = new int[k];
         for(int j = 0; j < k; j++)
@@ -170,6 +169,7 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
 
         int* outputValueMapping = new int[maximum]{ 0 };
 
+        printf("HERE\n");
         int mode = 0;
         int modeCount = -1;
         for(int blah = 0; blah < k; blah++)
