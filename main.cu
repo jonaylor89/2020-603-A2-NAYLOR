@@ -12,7 +12,7 @@
 #include <bits/stdc++.h>   // for sorting
 // -----------
 
-#define THREADS_DIM 256
+#define THREADS_DIM 16
 
 
 using namespace std;
@@ -144,14 +144,11 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
                     neighborDistances[idx] = sqrtOfSquaredSum;
                     lastLargerIndex = -1;
                 }
-                else
+                else if(neighborDistances[neighbors[idx]] < sqrtOfSquaredSum && lastLargerIndex != -1)
                 {
-                    if(lastLargerIndex != -1)
-                    {
-                        neighbors[idx] = j;
-                        neighborDistances[idx] = sqrtOfSquaredSum;
-                        lastLargerIndex = -1;
-                    }
+                    neighbors[idx] = j;
+                    neighborDistances[idx] = sqrtOfSquaredSum;
+                    lastLargerIndex = -1;
                 }
             }
         }
