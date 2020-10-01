@@ -142,6 +142,7 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
                 {
                     neighbors[idx] = j;
                     neighborDistances[idx] = sqrtOfSquaredSum;
+                    lastLargerIndex = -1;
                 }
                 else
                 {
@@ -149,23 +150,21 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
                     {
                         neighbors[idx] = j;
                         neighborDistances[idx] = sqrtOfSquaredSum;
+                        lastLargerIndex = -1;
                     }
                 }
             }
-
         }
 
         // map(neighbors, (x) => neighbors.class)
         for(int blah = 0; blah < k; blah++)
         {
-            outputValues[blah] = 10;
+            outputValues[blah] = 0;
         }
 
         for(int j = 0; j < k; j++)
         {
-            int val = (int)dataset[(neighbors[j] * columns) + columns - 1];
-            printf("%d\n", val);
-            outputValues[j] = val;
+            outputValues[j] = (int)dataset[(neighbors[j] * columns) + columns - 1];
         }
 
 
