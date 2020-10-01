@@ -294,7 +294,7 @@ int main(int argc, char *argv[])
     clock_gettime(CLOCK_MONOTONIC_RAW, &start);
     
     // Get the class predictions
-    KNN_GPU<<< gridSize, blockSize >>>(datasetArrayDevice, dataset->num_instances(), dataset->num_attributes(), k, predictionsDevice);
+    KNN_GPU<<< gridSize, blockSize >>>(datasetArrayDevice, dataset->num_instances(), dataset->num_attributes(), maximum, k, predictionsDevice);
     if(cudaGetLastError() != cudaSuccess) 
     { 
         cout << "Error calling kernel" << endl; 
