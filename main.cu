@@ -142,14 +142,14 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
                 {
                     neighbors[idx] = j;
                     neighborDistances[idx] = sqrtOfSquaredSum;
-                    printf("%f\n", sqrtOfSquaredSum);
+                    printf("first %f\n", sqrtOfSquaredSum);
                     lastLargerIndex = -1;
                 }
                 else if(neighborDistances[idx] < sqrtOfSquaredSum && lastLargerIndex != -1)
                 {
                     neighbors[idx] = j;
                     neighborDistances[idx] = sqrtOfSquaredSum;
-                    printf("%f\n", sqrtOfSquaredSum);
+                    printf("second %f\n", sqrtOfSquaredSum);
                     lastLargerIndex = -1;
                 }
             }
