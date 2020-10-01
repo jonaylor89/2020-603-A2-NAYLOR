@@ -12,7 +12,7 @@
 #include <bits/stdc++.h>   // for sorting
 // -----------
 
-#define THREADS_DIM 16
+#define THREADS_DIM 256
 
 
 using namespace std;
