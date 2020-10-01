@@ -162,6 +162,7 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
 
         // mode()
         int maximum = 0;
+        printf("HERE\n");
         for(int blah = 0; blah < k; blah++)
         {
             if(outputValues[blah] > maximum) { maximum = outputValues[blah]; }
@@ -169,7 +170,6 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
 
         int* outputValueMapping = new int[maximum]{ 0 };
 
-        printf("HERE\n");
         int mode = 0;
         int modeCount = -1;
         for(int blah = 0; blah < k; blah++)
@@ -282,7 +282,11 @@ int main(int argc, char *argv[])
     
     // Get the class predictions
     KNN_GPU<<< gridSize, blockSize >>>(datasetArrayDevice, dataset->num_instances(), dataset->num_attributes(), k, predictionsDevice);
-    if(cudaGetLastError() != cudaSuccess) { cout << "you messed up" << endl; }
+    if(cudaGetLastError() != cudaSuccess) 
+    { 
+        cout << "Error calling kernel" << endl; 
+        return 1;
+    }
 
     cudaMemcpy(predictionsHost, predictionsDevice, dataset->num_instances() * sizeof(int), cudaMemcpyDeviceToHost);
 
