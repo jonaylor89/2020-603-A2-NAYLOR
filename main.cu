@@ -180,7 +180,7 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
         {
             int outputValue = outputValues[blah];
 
-            if(outputValue != 0)
+            if(outputValue != 0 && outputValueMapping[outputValue] != 0)
             {
                 printf("%d %d\n", outputValue, outputValueMapping[outputValue]);
             }
