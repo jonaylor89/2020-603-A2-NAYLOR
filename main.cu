@@ -163,7 +163,12 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
 
         for(int j = 0; j < k; j++)
         {
-            outputValues[j] = (int)dataset[(neighbors[j] * columns) + columns - 1];
+            int val = (int)dataset[(neighbors[j] * columns) + columns - 1];
+            if(val != 0)
+            {
+                printf("%d\n", val);
+            }
+            outputValues[j] = val;
         }
 
 
@@ -174,19 +179,14 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
         }
 
 
-        int mode = 10;
+        int mode = 0;
         int modeCount = -1;
         for(int blah = 0; blah < k; blah++)
         {
             int outputValue = outputValues[blah];
-
             
             outputValueMapping[outputValue] += 1;
-            if(outputValue != 0)
-            {
-                printf("%d %d\n", outputValue, outputValueMapping[outputValue]);
-            }
-            
+
             if(outputValueMapping[outputValue] > modeCount)
             {
                 modeCount = outputValueMapping[outputValue];
