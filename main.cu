@@ -193,7 +193,7 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
             }
         }
 
-        printf("HERE\n");
+        printf("HERE %d\n", mode);
         predictions[row] = mode;
     }
 }
