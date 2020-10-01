@@ -92,7 +92,7 @@ void KNN(ArffData* dataset, int k, int* predictions)
     }
 }
 
-__global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predictions)
+__global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass, int k, int* predictions)
 {
 
     int row = blockIdx.x * blockDim.x + threadIdx.x; // Some combination of threadId and blockId
@@ -101,6 +101,7 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
     {
         // getNeighbors()
         int* outputValues = new int[k]{ 0 };
+        int* outputValueMapping = new int[maximumClass]{ 0 };
         int* neighbors = new int[k]{ 0 };
         double* neighborDistances = new double[k]{ FLT_MAX };
         int* distancesKey = new int[rows];
@@ -162,7 +163,6 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
 
         for(int j = 0; j < k; j++)
         {
-            printf("%d \n", neighbors[j] * columns + columns - 1);
             outputValues[j] = (int)dataset[(neighbors[j] * columns) + columns - 1];
         }
 
@@ -174,7 +174,10 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
             if(outputValues[blah] > maximum) { maximum = outputValues[blah]; }
         }
 
-        int* outputValueMapping = new int[maximum]{ 0 };
+        for(int blah = 0; blah < k; blah++)
+        {
+            outputValueMapping[blah] = 0;
+        }
 
         int mode = 0;
         int modeCount = -1;
@@ -282,7 +285,11 @@ int main(int argc, char *argv[])
     printf("The KNN classifier for %lu instances required %llu ms CPU time, accuracy was %.4f\n", dataset->num_instances(), (long long unsigned int) diff, accuracy);
 
     // ----------------------------- GPU -------------------------
-
+    int maximum = 0;
+    for(int blah = 0; blah < dataset->num_instances(); blah++)
+    {
+        if(dataset->get_instance(blah)->get(dataset->num_attributes() - 1)->operator int32() > maximum) { maximum = outputValues[blah]; }
+    }
 
     clock_gettime(CLOCK_MONOTONIC_RAW, &start);
     
