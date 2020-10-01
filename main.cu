@@ -158,7 +158,7 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
         // map(neighbors, (x) => neighbors.class)
         for(int blah = 0; blah < k; blah++)
         {
-            outputValues[blah] = 0;
+            outputValues[blah] = 10;
         }
 
         for(int j = 0; j < k; j++)
