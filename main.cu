@@ -168,19 +168,13 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
 
 
         // mode()
-        int maximum = 0;
-        for(int blah = 0; blah < k; blah++)
-        {
-            if(outputValues[blah] > maximum) { maximum = outputValues[blah]; }
-        }
-
         for(int blah = 0; blah < k; blah++)
         {
             outputValueMapping[blah] = 0;
         }
 
 
-        int mode = 0;
+        int mode = 10;
         int modeCount = -1;
         for(int blah = 0; blah < k; blah++)
         {
