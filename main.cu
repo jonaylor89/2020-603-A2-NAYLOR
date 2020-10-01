@@ -115,7 +115,7 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
                 continue;
             }
 
-            long squaredSum = 0;
+            double squaredSum = 0;
             for(int y = 0; y < columns - 1; y++)
             {
                 squaredSum += (
