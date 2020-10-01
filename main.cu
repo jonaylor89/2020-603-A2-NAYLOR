@@ -179,6 +179,8 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
             outputValueMapping[blah] = 0;
         }
 
+        printf("HERE\n");
+
         int mode = 0;
         int modeCount = -1;
         for(int blah = 0; blah < k; blah++)
