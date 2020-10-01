@@ -100,7 +100,8 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
     if(row < rows)
     {
         // getNeighbors()
-        int neighbors[5];
+        int* neighbors = new int[k]{ 0 };
+        double* neighborDistances = new double[k]{ FLT_MAX };
         int* distancesKey = new int[rows];
         double* distancesValue = new double[rows];
         for(int j = 0; j < rows; j++)
@@ -109,8 +110,6 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
             // map(dataset, (train) => (train, distance(train)))
             if(j == row)
             {
-                distancesKey[j] = j;
-                distancesValue[j] = INT_MAX;
                 continue;
             }
 
@@ -123,20 +122,43 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
                 );
             }
 
-            distancesKey[j] = j;
-            distancesValue[j] = sqrt(squaredSum);
+            int sqrtOfSquaredSum = sqrt(squaredSum);
+
+            // distancesKey[j] = j;
+            // distancesValue[j] = sqrtOfSquaredSum;
+
+            // modified insertion soort
+            int lastLargerIndex = -1;
+            for(int idx = k - 1; idx >= 0; idx--)
+            {
+                if(neighborDistances[neighbors[idx]] > sqrtOfSquaredSum && idx != 0) 
+                {
+                    lastLargerIndex = idx;
+                    continue; 
+                }
+                else if(neighborDistances[neighbors[idx]] > sqrtOfSquaredSum && idx == 0)
+                {
+                    neighbors[idx] = j;
+                    neighborDistances[idx] = sqrtOfSquaredSum;
+                }
+                else
+                {
+                    if(lastLargerIndex != -1)
+                    {
+                        neighbors[idx] = j;
+                        neighborDistances[idx] = sqrtOfSquaredSum;
+                    }
+                }
+            }
+
         }
 
         // distances.sort()
+        /*
         sort(distances, distances + row, [](tuple<int, double> a, tuple<int, double> b) {
             return get<1>(a) < get<1>(b);
         });
-
-        // distances.take(5)
-        for(int x = 0; x < k; x++)
-        {
-            neighbors[x] = get<0>(distancesKey[x]);
-        }
+        */
 
         // map(neighbors, (x) => neighbors.class)
         int* outputValues = new int[k];
@@ -145,6 +167,7 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
             outputValues[j] = (int)dataset[(neighbors[j] * columns) + rows - 1];
         }
 
+/*
         // mode()
         map<int, int> histogram;
 
@@ -160,9 +183,9 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
                 mode = element;
             }
         }
+        */
 
-        predictions[row] = mode;
-        delete distances;
+        // predictions[row] = mode;
     }
 }
 
