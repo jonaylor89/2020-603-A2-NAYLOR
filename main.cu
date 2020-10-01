@@ -182,7 +182,8 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
             }
         }
 
-        predictions[row] = 100;
+        cout << "HERE" << endl;
+        predictions[row] = mode;
     }
 }
 
