@@ -124,7 +124,7 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
                 );
             }
 
-            int sqrtOfSquaredSum = sqrt(squaredSum);
+            double sqrtOfSquaredSum = sqrt(squaredSum);
 
             // distancesKey[j] = j;
             // distancesValue[j] = sqrtOfSquaredSum;
