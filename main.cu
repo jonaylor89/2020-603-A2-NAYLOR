@@ -155,10 +155,11 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int k, int* predi
         }
 
         // map(neighbors, (x) => neighbors.class)
-        if(int blah = 0; blah < k; blah++)
+        for(int blah = 0; blah < k; blah++)
         {
             outputValues[blah] = 0;
         }
+
         for(int j = 0; j < k; j++)
         {
             printf("%d \n", neighbors[j] * columns + columns - 1);
