@@ -282,7 +282,7 @@ int main(int argc, char *argv[])
     
     // Get the class predictions
     KNN_GPU<<< gridSize, blockSize >>>(datasetArrayDevice, dataset->num_instances(), dataset->num_attributes(), k, predictionsDevice);
-    if(cudaGetLastError != cudaSuccess) { cout << "you messed up" << endl; }
+    if(cudaGetLastError() != cudaSuccess) { cout << "you messed up" << endl; }
 
     cudaMemcpy(predictionsHost, predictionsDevice, dataset->num_instances() * sizeof(int), cudaMemcpyDeviceToHost);
 
