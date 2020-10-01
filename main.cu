@@ -164,10 +164,7 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
         for(int j = 0; j < k; j++)
         {
             int val = (int)dataset[(neighbors[j] * columns) + columns - 1];
-            if(val != 0)
-            {
-                printf("%d\n", val);
-            }
+            printf("%d\n", val);
             outputValues[j] = val;
         }
 
