@@ -304,7 +304,7 @@ int main(int argc, char *argv[])
     auto cudaError = cudaGetLastError();
     if(cudaError != cudaSuccess) 
     { 
-        cout << "Error calling kernel " << cudaError << endl << "error string: " << cudaGetErrorString() << endl; 
+        cout << "Error calling kernel " << cudaError << endl << "error string: " << cudaGetErrorString(cudaError) << endl; 
         return 1;
     }
 
