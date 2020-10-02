@@ -108,7 +108,7 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
         int* distancesKey = new int[rows];
         double* distancesValue = new double[rows];
 
-        memset(neighborDistances, FLT_MAX, k);
+        memset(neighborDistances, INT_MAX, k * sizeof(double));
         for(int j = 0; j < rows; j++)
         {
 
@@ -156,7 +156,7 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
         }
 
         // map(neighbors, (x) => neighbors.class)
-        memset(outputValues, 0, k);
+        memset(outputValues, 0, k * sizeof(int));
 
         for(int j = 0; j < k; j++)
         {
@@ -165,7 +165,7 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
 
 
         // mode()
-        memset(outputValueMapping, 0, k);
+        memset(outputValueMapping, 0, k * sizeof(int));
 
         int mode = 0;
         int modeCount = -1;
