@@ -292,9 +292,11 @@ int main(int argc, char *argv[])
     
     // Get the class predictions
     KNN_GPU<<< gridSize, blockSize >>>(datasetArrayDevice, dataset->num_instances(), dataset->num_attributes(), maximum, k, predictionsDevice);
-    if(cudaGetLastError() != cudaSuccess) 
+
+    auto cudaError = cudaGetLastError();
+    if(cudaError != cudaSuccess) 
     { 
-        cout << "Error calling kernel" << endl; 
+        cout << "Error calling kernel " << cudaError << endl; 
         return 1;
     }
 
