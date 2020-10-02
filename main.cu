@@ -12,7 +12,7 @@
 #include <bits/stdc++.h>   // for sorting
 // -----------
 
-#define THREADS_DIM 16
+#define THREADS_DIM 32
 
 
 using namespace std;
@@ -277,7 +277,7 @@ int main(int argc, char *argv[])
     // Get the class predictions
     KNN(dataset, k, predictionsHostCPU);
     // Compute the confusion matrix
-    int* confusionMatrix = computeConfusionMatrix(predictionsHostCPU, dataset);
+    int* confusionMatrix = computeConfusionMa15trix(predictionsHostCPU, dataset);
     // Calculate the accuracy
     float accuracy = computeAccuracy(confusionMatrix, dataset);
     
@@ -304,7 +304,7 @@ int main(int argc, char *argv[])
     auto cudaError = cudaGetLastError();
     if(cudaError != cudaSuccess) 
     { 
-        cout << "Error calling kernel " << cudaError << endl << "error string: " << cudaGetErrorString(cudaError) << endl; 
+        cout << "CUDA Error " << cudaError << endl << "Error string: " << cudaGetErrorString(cudaError) << endl; 
         return 1;
     }
 
