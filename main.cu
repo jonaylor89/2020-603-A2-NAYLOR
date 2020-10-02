@@ -99,6 +99,9 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
 
     if(row < rows)
     {
+
+        printf("%d %d\n", row, predictions[row]);
+
         // getNeighbors()
         int* outputValues = new int[k]{ 0 };
         int* outputValueMapping = new int[maximumClass]{ 0 };
@@ -193,7 +196,7 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
         }
 
         predictions[row] = mode;
-        printf("%d %d\n", row, mode);
+        // printf("%d %d\n", row, mode);
     }
 }
 
