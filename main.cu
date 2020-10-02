@@ -104,7 +104,7 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
         int* outputValues = new int[k]{ 0 };
         int* outputValueMapping = new int[maximumClass+1]{ 0 };
         int* neighbors = new int[k]{ 0 };
-        double* neighborDistances = new double[k];
+        double* neighborDistances = new double[k]{ 0 };
         int* distancesKey = new int[rows];
         double* distancesValue = new double[rows];
 
@@ -293,8 +293,6 @@ int main(int argc, char *argv[])
         int val = dataset->get_instance(blah)->get(dataset->num_attributes() - 1)->operator int32(); 
         if(val > maximum) { maximum = val; }
     }
-
-    cout << maximum << endl;
 
     clock_gettime(CLOCK_MONOTONIC_RAW, &start);
     
