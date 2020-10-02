@@ -277,7 +277,7 @@ int main(int argc, char *argv[])
     // Get the class predictions
     KNN(dataset, k, predictionsHostCPU);
     // Compute the confusion matrix
-    int* confusionMatrix = computeConfusionMa15trix(predictionsHostCPU, dataset);
+    int* confusionMatrix = computeConfusionMatrix(predictionsHostCPU, dataset);
     // Calculate the accuracy
     float accuracy = computeAccuracy(confusionMatrix, dataset);
     
