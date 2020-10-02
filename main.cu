@@ -299,7 +299,6 @@ int main(int argc, char *argv[])
     // Get the class predictions
     KNN_GPU<<< gridSize, blockSize >>>(datasetArrayDevice, dataset->num_instances(), dataset->num_attributes(), maximum, k, predictionsDevice);
 
-    cudaMemcpy(predictionsHost, predictionsDevice, dataset->num_instances() * sizeof(int), cudaMemcpyDeviceToHost);
 
     auto cudaError = cudaGetLastError();
     if(cudaError != cudaSuccess) 
@@ -307,6 +306,7 @@ int main(int argc, char *argv[])
         cout << "Error calling kernel " << cudaError << endl << "error string: " << cudaGetErrorString(cudaError) << endl; 
         return 1;
     }
+    cudaMemcpy(predictionsHost, predictionsDevice, dataset->num_instances() * sizeof(int), cudaMemcpyDeviceToHost);
 
     for(int i = 0; i < dataset->num_instances(); i++)
     {
