@@ -102,7 +102,7 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
 
         // getNeighbors()
         int* outputValues = new int[k]{ 0 };
-        int* outputValueMapping = new int[maximumClass]{ 0 };
+        int* outputValueMapping = new int[maximumClass+1]{ 0 };
         int* neighbors = new int[k]{ 0 };
         double* neighborDistances = new double[k];
         int* distancesKey = new int[rows];
