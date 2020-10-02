@@ -131,7 +131,7 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
             for(int idx = k - 1; idx >= 0; idx--)
             {
 
-                printf("%d : %f > %f = %d", idx, neighborDistances[idx], sqrtOfSquaredSum, neighborDistances[idx] > sqrtOfSquaredSum);
+                printf("%d : %f > %f = %d\n", idx, neighborDistances[idx], sqrtOfSquaredSum, neighborDistances[idx] > sqrtOfSquaredSum);
                 if(neighborDistances[idx] > sqrtOfSquaredSum && idx != 0) 
                 {
                     lastLargerIndex = idx;
