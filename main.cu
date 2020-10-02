@@ -100,8 +100,6 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
     if(row < rows)
     {
 
-        printf("%d %d\n", row, predictions[row]);
-
         // getNeighbors()
         int* outputValues = new int[k]{ 0 };
         int* outputValueMapping = new int[maximumClass]{ 0 };
@@ -308,7 +306,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    cudaMemcpy(predictionsHost, predictionsDevice, dataset->num_instances() * sizeof(int), cudaMemcpyDeviceToHost);
+    cudaMemcpy(predictionsDevice, predictionsHost, dataset->num_instances() * sizeof(int), cudaMemcpyDeviceToHost);
 
     for(int i = 0; i < dataset->num_instances(); i++)
     {
