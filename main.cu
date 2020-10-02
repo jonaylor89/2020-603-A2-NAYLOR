@@ -103,9 +103,12 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
         int* outputValues = new int[k]{ 0 };
         int* outputValueMapping = new int[maximumClass]{ 0 };
         int* neighbors = new int[k]{ 0 };
-        double* neighborDistances = new double[k]{ 99999.999 };
+        double* neighborDistances = new double[k]{ FLT_MAX };
         int* distancesKey = new int[rows];
         double* distancesValue = new double[rows];
+
+        printf("%d %d %d\n", neighborDistances[0], neighborDistances[1], neighborDistances[2]);
+
         for(int j = 0; j < rows; j++)
         {
 
@@ -131,7 +134,7 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
             for(int idx = k - 1; idx >= 0; idx--)
             {
 
-                printf("%d : %f > %f = %d\n", idx, neighborDistances[idx], sqrtOfSquaredSum, neighborDistances[idx] > sqrtOfSquaredSum);
+                // printf("%d : %f > %f = %d\n", idx, neighborDistances[idx], sqrtOfSquaredSum, neighborDistances[idx] > sqrtOfSquaredSum);
                 if(neighborDistances[idx] > sqrtOfSquaredSum && idx != 0) 
                 {
                     lastLargerIndex = idx;
