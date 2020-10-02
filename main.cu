@@ -294,6 +294,8 @@ int main(int argc, char *argv[])
         if(val > maximum) { maximum = val; }
     }
 
+    cout << maximum << endl;
+
     clock_gettime(CLOCK_MONOTONIC_RAW, &start);
     
     // Get the class predictions
