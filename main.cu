@@ -302,7 +302,7 @@ int main(int argc, char *argv[])
     cudaMallocHost(&outputValues, k * dataset->num_instances() * sizeof(int));
     cudaMallocHost(&outputValueMapping, (maximum+1) * dataset->num_instances() * sizeof(int));
     cudaMallocHost(&neighbors, k * dataset->num_instances() * sizeof(int));
-    cudaMallocHost(&neighborDistances, k * dataset->num_instances() * sizeof(int));
+    cudaMallocHost(&neighborDistances, k * dataset->num_instances() * sizeof(double));
 
     cudaMalloc(&d_outputValues, k * dataset->num_instances() * sizeof(int));
     cudaMalloc(&d_outputValueMapping, (maximum+1) * dataset->num_instances() * sizeof(int));
