@@ -92,7 +92,19 @@ void KNN(ArffData* dataset, int k, int* predictions)
     }
 }
 
-__global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass, int k, int* predictions)
+__global__ void KNN_GPU(
+    float* dataset, 
+    int rows, 
+    int columns, 
+    int maximumClass, 
+    int k, 
+    int* predictions,
+
+    int* outputValues,
+    int* outputValueMapping,
+    int* neighbors,
+    double* neighborDistances
+)
 {
 
     int row = blockIdx.x * blockDim.x + threadIdx.x; // Some combination of threadId and blockId
@@ -101,14 +113,6 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
     {
 
         // getNeighbors()
-        int* outputValues = new int[k]{ 0 };
-        int* outputValueMapping = new int[maximumClass+1]{ 0 };
-        int* neighbors = new int[k]{ 0 };
-        double* neighborDistances = new double[k];
-        int* distancesKey = new int[rows];
-        double* distancesValue = new double[rows];
-
-        memset(neighborDistances, INT_MAX, k * sizeof(double));
         for(int j = 0; j < rows; j++)
         {
 
@@ -135,20 +139,20 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
             {
 
                 // printf("%d : %f > %f = %d\n", idx, neighborDistances[idx], sqrtOfSquaredSum, neighborDistances[idx] > sqrtOfSquaredSum);
-                if(neighborDistances[idx] > sqrtOfSquaredSum && idx != 0) 
+                if(neighborDistances[idx + (row * k)] > sqrtOfSquaredSum && idx != 0) 
                 {
                     lastLargerIndex = idx;
                 }
-                else if(neighborDistances[idx] > sqrtOfSquaredSum && idx == 0)
+                else if(neighborDistances[idx + (row * k)] > sqrtOfSquaredSum && idx == 0)
                 {
-                    neighbors[idx] = j;
-                    neighborDistances[idx] = sqrtOfSquaredSum;
+                    neighbors[idx + (row * k)] = j;
+                    neighborDistances[idx + (row * k)] = sqrtOfSquaredSum;
                     lastLargerIndex = -1;
                 }
-                else if(neighborDistances[idx] < sqrtOfSquaredSum && lastLargerIndex != -1)
+                else if(neighborDistances[idx + (row * k)] < sqrtOfSquaredSum && lastLargerIndex != -1)
                 {
-                    neighbors[lastLargerIndex] = j;
-                    neighborDistances[lastLargerIndex] = sqrtOfSquaredSum;
+                    neighbors[lastLargerIndex + (row * k)] = j;
+                    neighborDistances[lastLargerIndex + (row * k)] = sqrtOfSquaredSum;
                     lastLargerIndex = -1;
                     break;
                 }
@@ -156,28 +160,28 @@ __global__ void KNN_GPU(float* dataset, int rows, int columns, int maximumClass,
         }
 
         // map(neighbors, (x) => neighbors.class)
-        memset(outputValues, 0, k * sizeof(int));
+        memset(outputValues + (row * k), 0, k * sizeof(int));
 
         for(int j = 0; j < k; j++)
         {
-            outputValues[j] = (int)dataset[(neighbors[j] * columns) + columns - 1];
+            outputValues[j + (row * k)] = (int)dataset[(neighbors[j] * columns) + columns - 1];
         }
 
 
         // mode()
-        memset(outputValueMapping, 0, k * sizeof(int));
+        memset(outputValueMapping + (row * k), 0, k * sizeof(int));
 
         int mode = 0;
         int modeCount = -1;
         for(int blah = 0; blah < k; blah++)
         {
-            int outputValue = outputValues[blah];
+            int outputValue = outputValues[blah + (row * k)];
             
-            outputValueMapping[outputValue] += 1;
+            outputValueMapping[outputValue + (row * k)] += 1;
 
-            if(outputValueMapping[outputValue] > modeCount)
+            if(outputValueMapping[outputValue + (row * k)] > modeCount)
             {
-                modeCount = outputValueMapping[outputValue];
+                modeCount = outputValueMapping[outputValue + (row * k)];
                 mode = outputValue; 
             }
         }
@@ -283,10 +287,56 @@ int main(int argc, char *argv[])
         if(val > maximum) { maximum = val; }
     }
 
+    /***********************************************************/
+
+    int* outputValues;
+    int* outputValueMapping;
+    int* neighbors;
+    double* neighborDistances = new double[k];
+
+    int* d_outputValues;
+    int* d_outputValueMapping;
+    int* d_neighbors;
+    double* d_neighborDistances;
+
+    cudaMallocHost(&outputValues, k * dataset->num_instances() * sizeof(int));
+    cudaMallocHost(&outputValueMapping, (maximum+1) * dataset->num_instances() * sizeof(int));
+    cudaMallocHost(&neighbors, k * dataset->num_instances() * sizeof(int));
+    cudaMallocHost(&neighborDistances, k * dataset->num_instances() * sizeof(int));
+
+    cudaMalloc(&d_outputValues, k * dataset->num_instances() * sizeof(int));
+    cudaMalloc(&d_outputValueMapping, (maximum+1) * dataset->num_instances() * sizeof(int));
+    cudaMalloc(&d_neighbors, k * dataset->num_instances() * sizeof(int));
+    cudaMalloc(&d_neighborDistances, k * dataset->num_instances() * sizeof(double));
+
+    memset(outputValues, 0, k * dataset->num_instances() * sizeof(int));
+    memset(outputValueMapping, 0, k * dataset->num_instances() * sizeof(int));
+    memset(neighbors, 0, k * dataset->num_instances() * sizeof(int));
+    uninitialized_fill(neighborDistances, neighborDistances + dataset->num_instances(), FLT_MAX);
+
+    cudaMemcpy(d_outputValues, outputValues, k * dataset->num_instances() * sizeof(int), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_outputValueMapping, outputValueMapping, (maximum+1) * dataset->num_instances() * sizeof(int), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_neighbors, neighbors, k * dataset->num_instances() * sizeof(int), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_neighborDistances, neighborDistances, k * dataset->num_instances() * sizeof(double), cudaMemcpyHostToDevice);
+
+    /***********************************************************/
+
     clock_gettime(CLOCK_MONOTONIC_RAW, &start);
     
     // Get the class predictions
-    KNN_GPU<<< gridSize, blockSize >>>(datasetArrayDevice, dataset->num_instances(), dataset->num_attributes(), maximum, k, predictionsDevice);
+    KNN_GPU<<< gridSize, blockSize >>>(
+        datasetArrayDevice, 
+        dataset->num_instances(), 
+        dataset->num_attributes(), 
+        maximum, 
+        k, 
+        predictionsDevice,
+
+        d_outputValues,
+        d_outputValueMapping,
+        d_neighbors,
+        d_neighborDistances
+    );
 
     cudaMemcpy(predictionsHost, predictionsDevice, dataset->num_instances() * sizeof(int), cudaMemcpyDeviceToHost);
 
@@ -294,8 +344,7 @@ int main(int argc, char *argv[])
     if(cudaError != cudaSuccess) 
     { 
         cout << "CUDA Error " << cudaError << endl << "Error string: " << cudaGetErrorString(cudaError) << endl; 
-        return 1;
-    }
+        return 1; }
 
     for(int i = 0; i < dataset->num_instances(); i++)
     {
@@ -312,6 +361,21 @@ int main(int argc, char *argv[])
     uint64_t diffGPU = (1000000000L * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec) / 1e6;
 
     printf("The KNN classifier on the GPU for %lu instances required %llu ms CPU time, accuracy was %.4f\n", dataset->num_instances(), (long long unsigned int) diffGPU, accuracyGPU);
+
+    /***********************************/
+
+    cudaFreeHost(outputValues);
+    cudaFreeHost(outputValueMapping);
+    cudaFreeHost(neighbors);
+    cudaFreeHost(neighborDistances);
+
+    cudaFree(d_outputValues);
+    cudaFree(d_outputValueMapping);
+    cudaFree(d_neighbors);
+    cudaFree(d_neighborDistances);
+
+
+    /************************************/
 
     // Free memory
     cudaFree(predictionsDevice);
