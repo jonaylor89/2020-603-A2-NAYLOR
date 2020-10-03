@@ -12,7 +12,7 @@
 #include <bits/stdc++.h>   // for sorting
 // -----------
 
-#define THREADS_DIM 32
+#define THREADS_DIM 16
 
 
 using namespace std;
@@ -169,7 +169,7 @@ __global__ void KNN_GPU(
 
 
         // mode()
-        memset(outputValueMapping + (row * k), 0, k * sizeof(int));
+        memset(outputValueMapping + (row * (maximumClass+1)), 0, k * sizeof(int));
 
         int mode = 0;
         int modeCount = -1;
@@ -177,17 +177,17 @@ __global__ void KNN_GPU(
         {
             int outputValue = outputValues[blah + (row * k)];
             
-            outputValueMapping[outputValue + (row * k)] += 1;
+            outputValueMapping[outputValue + (row * (maximumClass+1))] += 1;
 
-            if(outputValueMapping[outputValue + (row * k)] > modeCount)
+            if(outputValueMapping[outputValue + (row * (maximumClass+1))] > modeCount)
             {
-                modeCount = outputValueMapping[outputValue + (row * k)];
+                modeCount = outputValueMapping[outputValue + (row * (maximumClass+1))];
                 mode = outputValue; 
             }
         }
 
         predictions[row] = mode;
-        // printf("%d %d\n", row, mode);
+        printf("%d %d\n", row, mode);
     }
 }
 
