@@ -248,8 +248,8 @@ int main(int argc, char *argv[])
 
     int gridDim = (dataset->num_instances() + THREADS_DIM - 1) / THREADS_DIM;
 
-    dim3 blockSize (THREADS_DIM, THREADS_DIM);
-    dim3 gridSize (gridDim, gridDim);
+    dim3 blockSize (THREADS_DIM, 1);
+    dim3 gridSize (gridDim, 1);
 
     for(int i = 0; i < dataset->num_instances(); i++)
     {
@@ -326,8 +326,18 @@ int main(int argc, char *argv[])
         k * dataset->num_instances() * sizeof(double), 
         cudaMemcpyHostToDevice
     );
-    cudaMemcpy(d_outputValues, outputValues, k * dataset->num_instances() * sizeof(int), cudaMemcpyHostToDevice);
-    cudaMemcpy(d_outputValueMapping, outputValueMapping, (maximum+1) * dataset->num_instances() * sizeof(int), cudaMemcpyHostToDevice);
+    cudaMemcpy(
+        d_outputValues, 
+        outputValues, 
+        k * dataset->num_instances() * sizeof(int), 
+        cudaMemcpyHostToDevice
+    );
+    cudaMemcpy(
+        d_outputValueMapping, 
+        outputValueMapping, 
+        (maximum+1) * dataset->num_instances() * sizeof(int), 
+        cudaMemcpyHostToDevice
+    );
 
     /***********************************************************/
 
