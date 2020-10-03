@@ -292,7 +292,7 @@ int main(int argc, char *argv[])
     int* outputValues;
     int* outputValueMapping;
     int* neighbors;
-    double* neighborDistances = new double[k];
+    double* neighborDistances;
 
     int* d_outputValues;
     int* d_outputValueMapping;
@@ -314,8 +314,18 @@ int main(int argc, char *argv[])
     memset(neighbors, 0, k * dataset->num_instances() * sizeof(int));
     uninitialized_fill(neighborDistances, neighborDistances + dataset->num_instances(), FLT_MAX);
 
-    cudaMemcpy(d_neighbors, neighbors, k * dataset->num_instances() * sizeof(int), cudaMemcpyHostToDevice);
-    cudaMemcpy(d_neighborDistances, neighborDistances, k * dataset->num_instances() * sizeof(double), cudaMemcpyHostToDevice);
+    cudaMemcpy(
+        d_neighbors, 
+        neighbors, 
+        k * dataset->num_instances() * sizeof(int), 
+        cudaMemcpyHostToDevice
+    );
+    cudaMemcpy(
+        d_neighborDistances, 
+        neighborDistances, 
+        k * dataset->num_instances() * sizeof(double), 
+        cudaMemcpyHostToDevice
+    );
     cudaMemcpy(d_outputValues, outputValues, k * dataset->num_instances() * sizeof(int), cudaMemcpyHostToDevice);
     cudaMemcpy(d_outputValueMapping, outputValueMapping, (maximum+1) * dataset->num_instances() * sizeof(int), cudaMemcpyHostToDevice);
 
