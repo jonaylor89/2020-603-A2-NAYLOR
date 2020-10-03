@@ -316,7 +316,7 @@ int main(int argc, char *argv[])
 
     cudaMemcpy(d_neighbors, neighbors, k * dataset->num_instances() * sizeof(int), cudaMemcpyHostToDevice);
     cudaMemcpy(d_neighborDistances, neighborDistances, k * dataset->num_instances() * sizeof(double), cudaMemcpyHostToDevice);
-    cudaMemcpy(d_outcudaMemcpyputValues, outputValues, k * dataset->num_instances() * sizeof(int), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_outputValues, outputValues, k * dataset->num_instances() * sizeof(int), cudaMemcpyHostToDevice);
     cudaMemcpy(d_outputValueMapping, outputValueMapping, (maximum+1) * dataset->num_instances() * sizeof(int), cudaMemcpyHostToDevice);
 
     /***********************************************************/
