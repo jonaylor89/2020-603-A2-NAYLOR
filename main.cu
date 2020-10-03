@@ -164,7 +164,7 @@ __global__ void KNN_GPU(
 
         for(int j = 0; j < k; j++)
         {
-            outputValues[j + (row * k)] = (int)dataset[(neighbors[j] * columns) + columns - 1];
+            outputValues[j + (row * k)] = (int)dataset[(neighbors[j + (row * k)] * columns) + columns - 1];
         }
 
 
@@ -187,7 +187,7 @@ __global__ void KNN_GPU(
         }
 
         predictions[row] = mode;
-        printf("%d %d\n", row, mode);
+        // printf("%d %d\n", row, mode);
     }
 }
 
@@ -312,7 +312,7 @@ int main(int argc, char *argv[])
     memset(outputValues, 0, k * dataset->num_instances() * sizeof(int));
     memset(outputValueMapping, 0, k * dataset->num_instances() * sizeof(int));
     memset(neighbors, 0, k * dataset->num_instances() * sizeof(int));
-    uninitialized_fill(neighborDistances, neighborDistances + dataset->num_instances(), FLT_MAX);
+    uninitialized_fill(neighborDistances, neighborDistances + dataset->num_instances() * k, FLT_MAX);
 
     cudaMemcpy(
         d_neighbors, 
