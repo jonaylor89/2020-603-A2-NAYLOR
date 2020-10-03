@@ -340,12 +340,6 @@ int main(int argc, char *argv[])
 
     cudaMemcpy(predictionsHost, predictionsDevice, dataset->num_instances() * sizeof(int), cudaMemcpyDeviceToHost);
 
-    auto cudaError = cudaGetLastError();
-    if(cudaError != cudaSuccess) 
-    { 
-        cout << "CUDA Error " << cudaError << endl << "Error string: " << cudaGetErrorString(cudaError) << endl; 
-        return 1; }
-
     for(int i = 0; i < dataset->num_instances(); i++)
     {
         cout << predictionsHost[i] << " ";
