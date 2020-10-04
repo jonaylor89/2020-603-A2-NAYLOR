@@ -133,7 +133,7 @@ __global__ void KNN_GPU(
 
             double sqrtOfSquaredSum = sqrt(squaredSum);
 
-            // modified insertion soort
+            // modified insertion sort
             int lastLargerIndex = -1;
             for(int idx = k - 1; idx >= 0; idx--)
             {
@@ -166,6 +166,16 @@ __global__ void KNN_GPU(
         {
             outputValues[j + (row * k)] = (int)dataset[(neighbors[j + (row * k)] * columns) + columns - 1];
         }
+
+        printf(
+            "%d: %d %d %d %d %d\n", 
+            row, 
+            outputValues[(row * k) + 0], 
+            outputValues[(row * k) + 1],
+            outputValues[(row * k) + 2],
+            outputValues[(row * k) + 3],
+            outputValues[(row * k) + 4]
+        );
 
 
         // mode()
