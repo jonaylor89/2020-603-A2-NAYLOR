@@ -287,12 +287,6 @@ int main(int argc, char *argv[])
     clock_gettime(CLOCK_MONOTONIC_RAW, &end);
     uint64_t diff = (1000000000L * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec) / 1e6;
 
-     for(int i = 0; i < dataset->num_instances(); i++)
-    {
-        cout << predictionsHostCPU[i] << " ";
-    }
-    cout << endl;
-
    printf("The KNN classifier for %lu instances required %llu ms CPU time, accuracy was %.4f\n", dataset->num_instances(), (long long unsigned int) diff, accuracy);
 
     // ----------------------------- GPU -------------------------
@@ -378,7 +372,14 @@ int main(int argc, char *argv[])
 
     for(int i = 0; i < dataset->num_instances(); i++)
     {
-        cout << predictionsHost[i] << " ";
+        if(predictionsHost[i] == predictionsHostCPU[i])
+        {
+            cout << predictionsHost[i] << " ";
+        }
+        else
+        {
+            cout << "[" << predictionsHostCPU[i] << ", " << predictionsHost[i] << "] ";
+        }
     }
     cout << endl;
 
